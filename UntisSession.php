@@ -8,46 +8,145 @@ Class UntisSession {
   private $username;
   private $password;
   private $school;
+  private $client;
+
+  private $id;
+
   private $isLogin;
 
   private $sessionId;
 
-  function __construct ($server = "", $username = "", $password ="", $school ="") {
-
+  function __construct ($server = null, $username = null, $password =null, $school =null, $client = null) {
+    $this->id = "NewUntis ". $client . $_SERVER['REQUEST_TIME'];
   }
 
-  function setServer (String $s) {
-    //checks, if input is valid
-    if (is_string($s)) {
-      if(filter_var($s, FILTER_VALIDATE_URL)) {
-        //sets server-val of Server
-        $this->server = $s;
-      } else {
-        throw new Exception("server is not a valid url", 1);
+  function setServer ($s) {
+    if(!$isLogin) {
+      //checks, if input is valid
+      if (is_string($s)) {
+        if(filter_var($s, FILTER_VALIDATE_URL)) {
+          //sets server-val of Server
+          $this->server = $s;
+        } else {
+          throw new Exception("server is not a valid url", 1);
 
+        }
       }
+    } else {
+      throw new Exception("You cannot change a value while you logged in", 0);
+
     }
   }
 
-  function setUsername(String $u) {
-    $this->username = $u;
+
+  function setUsername($u) {
+    if(!$isLogin) {
+        if(is_string($u)) {
+          $this->username = $u;
+        }
+    } else {
+      throw new Exception("You cannot change a value while you logged in", 0);
+
+    }
   }
 
-  function setPassword(String $p) {
-    $this->password = $p;
+  function setPassword($p) {
+    if(!$isLogin) {
+        if(is_string($p)) {
+          $this->password = $p;
+        }
+    } else {
+      throw new Exception("You cannot change a value while you logged in", 0);
+
+    }
+
   }
 
-  function setSchool(String $s) {
-    $this->school = $s;
+  function setSchool($s) {
+    if(!$isLogin) {
+        if(is_string($s)) {
+          $this->school = $s;
+        }
+    } else {
+      throw new Exception("You cannot change a value while you logged in", 0);
+
+    }
   }
 
 
-  function login () {
+  function authenticate () {
+    if($this->isLogin) {
+
+      throw new Exception("Already logged in!", 1001);
+
+    } else {
+      if(isset($this->server)) {
+        if(isset($this->username)) {
+          if(isset($this->password)) {
+            if(isset($this->school)) {
+
+              $finalurl = $this->server."?school=".$this->school;
+
+              //print($finalurl);
+
+              $params = array();
+              $params["user"] = $this->username;
+              $params["password"] = $this->password;
+              $params["client"] = $this->client;
+
+              $sh = new UntisSessionHandler();
+              $login_result = $sh->handle($finalurl, $params, "authenticate", $this->id);
+              $login_resultde = json_decode($login_result, true);
+
+              if($login_resultde["id"] == "error") {
+                throw new Exception("Error, for more check the log", 1010);
+
+              } else {
+                //if true, everything went good
+                if(isset($login_resultde["result"]["sessionId"])) {
+                  $this->sessionId = $login_resultde["result"]["sessionId"];
+
+                  $this->isLogin = true;
+                }
+              }
+
+            } else {
+
+            }
+          } else {
+
+          }
+        } else {
+          throw new Exception("username not set", 1003);
+
+        }
+      } else {
+        throw new Exception("url not set", 1002);
+      }
+    }
 
   }
 
   function logout () {
+    if($this->isLogin) {
+      $finalurl = $this->server."?school=".$this->school;
+      $params = array();
+      $sh = new UntisSessionHandler();
+      $logout_result = $sh->handle($finalurl, $params, "logout", $this->id, $this->sessionId);
+      $logout_resultde = json_decode($logout_result,true);
+      //print($logout_result);
+      if($logout_resultde["id"] == "error") {
+        throw new Exception("Error, for more check the log", 1010);
 
+      } else {
+        //if true, everything went good
+        $this->isLogin = false;
+      }
+
+    } else {
+      throw new Exception("already logged out", 1);
+
+    }
   }
 
   function getTeachers () {
