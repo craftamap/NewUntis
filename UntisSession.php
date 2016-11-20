@@ -1,8 +1,8 @@
 <?php
 
-require("SessionHandler.php");
+require("UntisSessionHandler.php");
 
-Class Session {
+Class UntisSession {
 
   private $server;
   private $username;

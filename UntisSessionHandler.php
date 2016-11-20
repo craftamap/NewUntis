@@ -1,9 +1,5 @@
 <?php
-class SessionHandler {
-
-    function __construct () {
-
-    }
+class UntisSessionHandler {
 
     function handle (String $url,Array $params,String $method,String $id,String $jsessionId = null) {
 
@@ -28,8 +24,13 @@ class SessionHandler {
       if(isset($jsessionId)) {
         curl_setopt($ch, CURLOPT_COOKIE, "JSESSIONID=".$jsessionId);
       }
-    }
 
+
+      if( ! $result = curl_exec($ch))
+        {
+          trigger_error(curl_error($ch));
+        }
+    }
 }
 
 
