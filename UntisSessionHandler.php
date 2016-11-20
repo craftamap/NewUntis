@@ -1,7 +1,7 @@
 <?php
 class UntisSessionHandler {
 
-    function handle (String $url,Array $params,String $method,String $id,String $jsessionId = null) {
+    function handle ($url, Array $params, $method, $id,  $jsessionId = null) {
 
       $postfield = array();
       $postfield["id"] = $id;
@@ -19,7 +19,7 @@ class UntisSessionHandler {
           'Content-Type: application/json',
           'Content-Length: ' . strlen($postfieldjs))
         );
-      curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       //If there is an jsessionid, set as cookie
       if(isset($jsessionId)) {
         curl_setopt($ch, CURLOPT_COOKIE, "JSESSIONID=".$jsessionId);
@@ -29,6 +29,8 @@ class UntisSessionHandler {
       if( ! $result = curl_exec($ch))
         {
           trigger_error(curl_error($ch));
+        } else {
+          return($result);
         }
     }
 }
