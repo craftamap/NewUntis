@@ -108,6 +108,7 @@ Class UntisSession {
                   $this->sessionId = $login_resultde["result"]["sessionId"];
 
                   $this->isLogin = true;
+                  return true;
                 }
               }
 
@@ -142,6 +143,7 @@ Class UntisSession {
       } else {
         //if true, everything went good
         $this->isLogin = false;
+        return true;
       }
 
     } else {
@@ -158,13 +160,27 @@ Class UntisSession {
 
   }
 
-  function getKlassen() {
+  function getKlassen($schoolyearId = NULL) {
     if($this->isLogin) {
       $finalurl = $this->server."?school=".$this->school;
       $params = array();
+      if (isset($schoolyearId)) {
+        $params["schoolyearId"] = $schoolyearId;
+      }
       $sh = new UntisSessionHandler();
       $result = $sh->handle($finalurl, $params, "getKlassen", $this->id, $this->sessionId);
       $resultde = json_decode($result, true);
+      if($resultde["id"] == "error") {
+        throw new Exception("Error Processing Request", 1);
+
+      } else {
+        $retarray = array();
+        foreach ($resultde["result"] as $key => $value) {
+          $kl = new UntisKlasse($value);
+          array_push($retarray, $kl);
+        }
+        return($retarray);
+      }
     }
   }
 
