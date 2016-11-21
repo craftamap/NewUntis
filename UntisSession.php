@@ -1,6 +1,7 @@
 <?php
 
 require("UntisSessionHandler.php");
+require("UntisKlasse.php");
 
 Class UntisSession {
 
@@ -158,7 +159,13 @@ Class UntisSession {
   }
 
   function getKlassen() {
-
+    if($this->isLogin) {
+      $finalurl = $this->server."?school=".$this->school;
+      $params = array();
+      $sh = new UntisSessionHandler();
+      $result = $sh->handle($finalurl, $params, "getKlassen", $this->id, $this->sessionId);
+      $resultde = json_decode($result, true);
+    }
   }
 
   function getSubjects() {
