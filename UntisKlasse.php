@@ -4,6 +4,8 @@ class UntisKlasse {
   public $id;
   public $name;
   public $longName;
+  //public $foreColor;
+  //public $backcolor;
 
   function __construct (Array $ar = null) {
     if (isset($ar)) {
