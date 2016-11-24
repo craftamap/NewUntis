@@ -2,6 +2,9 @@
 
 require("UntisSessionHandler.php");
 require("UntisKlasse.php");
+require("UntisSubject.php");
+require("UntisRoom.php");
+require("UntisDepartment.php");
 
 Class UntisSession {
 
@@ -185,15 +188,70 @@ Class UntisSession {
   }
 
   function getSubjects() {
+    if($this->isLogin) {
+      $finalurl = $this->server."?school=".$this->school;
+      $params = array();
+      $sh = new UntisSessionHandler();
+      $result = $sh->handle($finalurl, $params, "getSubjects", $this->id, $this->sessionId);
+      $resultde = json_decode($result, true);
+      if($resultde["id"] == "error") {
+        throw new Exception("Error Processing Request", 1);
 
+      } else {
+        $retarray = array();
+        foreach($resultde["result"] as $key => $value) {
+          $sub = new UntisSubject($value);
+          array_push($retarray, $sub);
+        }
+        return($retarray);
+      }
+    }
   }
 
   function getRooms() {
+    if($this->isLogin) {
+      $finalurl = $this->server."?school=".$this->school;
+      $params = array();
+      $sh = new UntisSessionHandler();
+      $result = $sh->handle($finalurl, $params, "getRooms", $this->id, $this->sessionId);
+      $resultde = json_decode($result, true);
+      if($resultde["id"] == "error") {
+        throw new Exception("Error Processing Request", 1);
 
+      } else {
+        $retarray = array();
+        foreach($resultde["result"] as $key => $value) {
+          $sub = new UntisRoom($value);
+          array_push($retarray, $sub);
+        }
+        return($retarray);
+      }
+    }
   }
 
   function getDepartments () {
+    if($this->isLogin) {
+      $finalurl = $this->server."?school=".$this->school;
+      $params = array();
+      $sh = new UntisSessionHandler();
+      $result = $sh->handle($finalurl, $params, "getDepartments", $this->id, $this->sessionId);
+      $resultde = json_decode($result, true);
+      if($resultde["id"] == "error") {
+        throw new Exception("Error Processing Request", 1);
 
+      } else {
+        $retarray = array();
+        foreach($resultde["result"] as $key => $value) {
+          $sub = new UntisDepartment($value);
+          array_push($retarray, $sub);
+        }
+        return($retarray);
+      }
+    }
+  }
+
+  function getHolidays() {
+    
   }
 
   function getTimegridUntis() {
